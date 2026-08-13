@@ -1,89 +1,56 @@
-// ================= MOBILE MENU =================
-
-const menuBtn = document.querySelector(".menu-btn");
-const nav = document.querySelector(".navbar nav");
+const menuBtn = document.getElementById("menuBtn");
+const nav = document.getElementById("nav");
 
 menuBtn.addEventListener("click", () => {
-    nav.classList.toggle("show");
+    const open = nav.classList.toggle("show");
+    menuBtn.setAttribute("aria-expanded", open);
+    menuBtn.innerHTML = open
+        ? '<i class="fa-solid fa-xmark"></i>'
+        : '<i class="fa-solid fa-bars"></i>';
 });
 
+document.querySelectorAll("#nav a").forEach(link => {
+    link.addEventListener("click", () => {
+        nav.classList.remove("show");
+        menuBtn.setAttribute("aria-expanded", "false");
+        menuBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
+    });
+});
 
-// ================= ACTIVE NAVIGATION =================
+const sections = document.querySelectorAll("section[id]");
+const navLinks = document.querySelectorAll("#nav a");
 
-const sections = document.querySelectorAll("section");
-const navLinks = document.querySelectorAll(".navbar nav a");
-
-window.addEventListener("scroll", () => {
-
-    let current = "";
+function updateActiveLink() {
+    let current = "home";
 
     sections.forEach(section => {
-
-        const sectionTop = section.offsetTop - 150;
-
-        if (window.scrollY >= sectionTop) {
-            current = section.getAttribute("id");
+        if (window.scrollY >= section.offsetTop - 160) {
+            current = section.id;
         }
-
     });
 
     navLinks.forEach(link => {
-
-        link.classList.remove("active");
-
-        if (link.getAttribute("href") === "#" + current) {
-            link.classList.add("active");
-        }
-
+        link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
     });
+}
 
-});
+window.addEventListener("scroll", updateActiveLink);
+updateActiveLink();
 
+document.getElementById("year").textContent = new Date().getFullYear();
 
-// ================= CONTACT FORM =================
-
-const contactForm = document.getElementById("contactForm");
-
-contactForm.addEventListener("submit", function(event) {
-
+document.getElementById("contactForm").addEventListener("submit", event => {
     event.preventDefault();
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const message = document.getElementById("message").value;
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message").value.trim();
 
-    if (!name || !email || !message) {
-        alert("Please fill all fields.");
-        return;
-    }
+    const subject = encodeURIComponent(`Portfolio message from ${name}`);
+    const body = encodeURIComponent(
+        `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+    );
 
-    alert("Thank you, " + name + "! Your message has been received.");
-
-    contactForm.reset();
-
-});
-
-
-// ================= SMOOTH SCROLL =================
-
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-
-    anchor.addEventListener("click", function(event) {
-
-        const target = document.querySelector(
-            this.getAttribute("href")
-        );
-
-        if (target) {
-
-            event.preventDefault();
-
-            target.scrollIntoView({
-                behavior: "smooth"
-            });
-
-        }
-
-    });
-
+    window.location.href =
+        `mailto:udaybehra219@gmail.com?subject=${subject}&body=${body}`;
 });
