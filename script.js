@@ -1,13 +1,4 @@
-const menu=document.getElementById('menu');
-const nav=document.getElementById('nav');
-menu.addEventListener('click',()=>{const open=nav.classList.toggle('show');menu.setAttribute('aria-expanded',String(open));menu.innerHTML=open?'<i class="fa-solid fa-xmark"></i>':'<i class="fa-solid fa-bars"></i>';});
-document.querySelectorAll('#nav a').forEach(link=>link.addEventListener('click',()=>{nav.classList.remove('show');menu.setAttribute('aria-expanded','false');menu.innerHTML='<i class="fa-solid fa-bars"></i>';}));
-const progress=document.getElementById('progress');
-const updateScroll=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=(window.scrollY/Math.max(max,1)*100)+'%';};
-window.addEventListener('scroll',updateScroll,{passive:true});updateScroll();
-document.getElementById('year').textContent=new Date().getFullYear();
-const revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');revealObserver.unobserve(entry.target);}}),{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
-const sections=[...document.querySelectorAll('main section[id]')];
-const navObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+entry.target.id));}}),{rootMargin:'-35% 0px -55% 0px'});
-sections.forEach(section=>navObserver.observe(section));
+const menu=document.getElementById('menu');const nav=document.getElementById('nav');if(menu&&nav){menu.addEventListener('click',()=>{const open=nav.classList.toggle('show');menu.setAttribute('aria-expanded',String(open));menu.innerHTML=open?'<i class="fa-solid fa-xmark"></i>':'<i class="fa-solid fa-bars"></i>';});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('show');menu.setAttribute('aria-expanded','false');menu.innerHTML='<i class="fa-solid fa-bars"></i>';}));}
+const progress=document.getElementById('progress');const updateProgress=()=>{if(!progress)return;const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=(window.scrollY/Math.max(max,1)*100)+'%';};window.addEventListener('scroll',updateProgress,{passive:true});updateProgress();const year=document.getElementById('year');if(year)year.textContent=new Date().getFullYear();
+const revealItems=document.querySelectorAll('.reveal');if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}}),{threshold:.12});revealItems.forEach(el=>observer.observe(el));}else revealItems.forEach(el=>el.classList.add('visible'));
+const form=document.getElementById('contactForm');if(form)form.addEventListener('submit',event=>{event.preventDefault();const name=document.getElementById('name').value.trim();const email=document.getElementById('email').value.trim();const message=document.getElementById('message').value.trim();const subject=encodeURIComponent('Portfolio enquiry from '+name);const body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\n'+message);window.location.href='mailto:udaybehra219@gmail.com?subject='+subject+'&body='+body;});
