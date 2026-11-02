@@ -1,6 +1,13 @@
-const menu=document.getElementById('menu');const nav=document.getElementById('nav');
-menu.addEventListener('click',()=>{const open=nav.classList.toggle('show');menu.innerHTML=open?'<i class="fa-solid fa-xmark"></i>':'<i class="fa-solid fa-bars"></i>';menu.setAttribute('aria-expanded',open)});
-document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('show')));
-const progress=document.getElementById('progress');window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-innerHeight;progress.style.width=(scrollY/Math.max(h,1)*100)+'%';let current='home';document.querySelectorAll('section[id]').forEach(s=>{if(scrollY>=s.offsetTop-180)current=s.id});document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+current))});
+const menu=document.getElementById('menu');
+const nav=document.getElementById('nav');
+menu.addEventListener('click',()=>{const open=nav.classList.toggle('show');menu.setAttribute('aria-expanded',String(open));menu.innerHTML=open?'<i class="fa-solid fa-xmark"></i>':'<i class="fa-solid fa-bars"></i>';});
+document.querySelectorAll('#nav a').forEach(link=>link.addEventListener('click',()=>{nav.classList.remove('show');menu.setAttribute('aria-expanded','false');menu.innerHTML='<i class="fa-solid fa-bars"></i>';}));
+const progress=document.getElementById('progress');
+const updateScroll=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=(window.scrollY/Math.max(max,1)*100)+'%';};
+window.addEventListener('scroll',updateScroll,{passive:true});updateScroll();
 document.getElementById('year').textContent=new Date().getFullYear();
-document.getElementById('contactForm').addEventListener('submit',e=>{e.preventDefault();const n=document.getElementById('name').value.trim(),em=document.getElementById('email').value.trim(),m=document.getElementById('message').value.trim();location.href=`mailto:udaybehra219@gmail.com?subject=${encodeURIComponent('Portfolio message from '+n)}&body=${encodeURIComponent('Name: '+n+'\nEmail: '+em+'\n\n'+m)}`});
+const revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');revealObserver.unobserve(entry.target);}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+const sections=[...document.querySelectorAll('main section[id]')];
+const navObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+entry.target.id));}}),{rootMargin:'-35% 0px -55% 0px'});
+sections.forEach(section=>navObserver.observe(section));
