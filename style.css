@@ -22,3 +22,34 @@ img { height: auto; }
   html { scroll-behavior: auto; }
   .reveal { content-visibility: visible; }
 }
+
+
+/* VEYRO refinement: accessible focus, restrained motion and stable rendering */
+:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 4px;
+}
+.reveal { content-visibility: visible; }
+.site-header { -webkit-backdrop-filter: blur(14px); }
+.menu-toggle { min-width: 42px; min-height: 42px; cursor: pointer; }
+.navigation a:focus-visible, .button:focus-visible, .logo:focus-visible {
+  outline-offset: 5px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .focus-card, .value-card, .project-row, .stat-item {
+    transition: transform .24s ease, border-color .24s ease, background-color .24s ease;
+  }
+  .project-row:hover { background: rgba(255,255,255,.018); }
+}
+@media (max-width: 700px) {
+  .navigation { box-shadow: 0 18px 24px rgba(0,0,0,.18); }
+  .navigation a { min-height: 42px; display: flex; align-items: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
