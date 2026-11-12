@@ -5,11 +5,12 @@
   const nav = document.getElementById('nav');
 
   if (menu && nav) {
-    const closeMenu = () => {
+    const closeMenu = (returnFocus = false) => {
       nav.classList.remove('show');
       menu.setAttribute('aria-expanded', 'false');
       menu.setAttribute('aria-label', 'Open navigation menu');
       menu.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+      if (returnFocus) menu.focus();
     };
 
     menu.addEventListener('click', () => {
@@ -21,28 +22,49 @@
         : '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
     });
 
-    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') closeMenu();
+    nav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => closeMenu());
     });
+
+    document.addEventListener('pointerdown', event => {
+      if (nav.classList.contains('show') &&
+          !nav.contains(event.target) && !menu.contains(event.target)) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && nav.classList.contains('show')) {
+        closeMenu(true);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 700) closeMenu();
+    }, { passive: true });
   }
 
   const progress = document.getElementById('progress');
   let scrollTicking = false;
   const updateProgress = () => {
-    if (!progress) return;
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    const percent = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
-    progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+    if (progress) {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      progress.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
+    }
     scrollTicking = false;
   };
+
   if (progress) {
+    progress.style.width = '100%';
+    progress.style.transformOrigin = 'left center';
     window.addEventListener('scroll', () => {
       if (!scrollTicking) {
         window.requestAnimationFrame(updateProgress);
         scrollTicking = true;
       }
     }, { passive: true });
+    window.addEventListener('resize', updateProgress, { passive: true });
     updateProgress();
   }
 
@@ -51,6 +73,7 @@
 
   const revealItems = document.querySelectorAll('.reveal');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   if (reduceMotion || !('IntersectionObserver' in window)) {
     revealItems.forEach(item => item.classList.add('visible'));
   } else {
@@ -61,7 +84,8 @@
           currentObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.08, rootMargin: '0px 0px 40px 0px' });
+    }, { threshold: 0.08, rootMargin: '0px 0px 48px 0px' });
+
     revealItems.forEach(item => observer.observe(item));
   }
 
